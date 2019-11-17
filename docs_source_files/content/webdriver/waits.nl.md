@@ -80,6 +80,11 @@ await driver.get('file:///race_condition.html');
 const element = await driver.findElement(By.css('p'));
 assert.strictEqual(await element.getText(), 'Hello from JavaScript!');
   {{< / code-panel >}}
+  {{< code-panel language="kotlin" >}}
+driver.get("file:///race_condition.html")
+val element = driver.findElement(By.tagName("p"))
+assert(element.text == "Hello from JavaScript!")
+  {{< / code-panel >}}
 {{< / code-tab >}}
 
 The issue here is that the default
@@ -160,7 +165,14 @@ el = driver.find_element_by_tag_name("p")
 assert el.text == "Hello from JavaScript!"
   {{< / code-panel >}}
   {{< code-panel language="csharp" >}}
-// We don't have a C# code sample yet -  Help us out and raise a PR
+driver = new ChromeDriver();
+driver.Url = "https://www.google.com/ncr";
+driver.FindElement(By.Name("q")).SendKeys("cheese" + Keys.Enter);
+            
+WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+IWebElement firstResult = wait.Until(e => e.FindElement(By.XPath("//a/h3")));
+
+Console.WriteLine(firstResult.Text);
   {{< / code-panel >}}
   {{< code-panel language="ruby" >}}
 require 'selenium-webdriver'
@@ -189,6 +201,15 @@ await driver.wait(() => documentInitialised(), 10000);
 const element = await driver.findElement(By.css('p'));
 assert.strictEqual(await element.getText(), 'Hello from JavaScript!');
   {{< / code-panel >}}
+  {{< code-panel language="kotlin" >}}
+driver.get("https://google.com/ncr")
+driver.findElement(By.name("q")).sendKeys("cheese" + Keys.ENTER)
+// Initialize and wait till element(link) became clickable - timeout in 10 seconds
+val firstResult = WebDriverWait(driver, 10)
+      .until(ExpectedConditions.elementToBeClickable(By.xpath("//a/h3")))
+// Print the first result
+println(firstResult.text)
+  {{< / code-panel >}}
 {{< / code-tab >}}
 
 We pass in the _condition_ as a function reference
@@ -207,7 +228,9 @@ we can refactor our instructions to be more concise:
 
 {{< code-tab >}}
   {{< code-panel language="java" >}}
-// We don't have a Java code sample yet -  Help us out and raise a PR
+WebElement foo = new WebDriverWait(driver, 3)
+            .until(driver -> driver.findElement(By.name("q")));
+assertEquals(foo.getText(), "Hello from JavaScript!");   
   {{< / code-panel >}}
   {{< code-panel language="python" >}}
 from selenium.webdriver.support.ui import WebDriverWait
@@ -224,6 +247,12 @@ assert el.text == "Hello from JavaScript!"
   {{< / code-panel >}}
   {{< code-panel language="javascript" >}}
 // We don't have a JavaScript code sample yet -  Help us out and raise a PR  
+  {{< / code-panel >}}
+  {{< code-panel language="kotlin" >}}
+driver.get("file:///race_condition.html")
+val ele = WebDriverWait(getWebDriver(), 10)
+            .until(ExpectedConditions.presenceOfElementLocated(By.tagName("p")))
+assert(ele.text == "Hello from JavaScript!")
   {{< / code-panel >}}
 {{< / code-tab >}}
 
@@ -271,6 +300,9 @@ WebDriverWait(driver, timeout=3).until(some_condition)
   {{< / code-panel >}}
   {{< code-panel language="javascript" >}}
 // We don't have a JavaScript code sample yet -  Help us out and raise a PR  
+  {{< / code-panel >}}
+  {{< code-panel language="kotlin" >}}
+WebDriverWait(driver, 3).until(ExpectedConditions.elementToBeClickable(By.xpath("//a/h3")))
   {{< / code-panel >}}
 {{< / code-tab >}}
 
@@ -344,7 +376,10 @@ driver.get("http://somedomain/url_that_delays_loading")
 my_dynamic_element = driver.find_element_by_id("myDynamicElement")
   {{< / code-panel >}}
   {{< code-panel language="csharp" >}}
-// We don't have a C# code sample yet -  Help us out and raise a PR
+IWebDriver driver = new ChromeDriver();
+driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+driver.Url = "http://somedomain/url_that_delays_loading";
+IWebElement dynamicElement = driver.FindElement(By.Name("dynamicElement"));
   {{< / code-panel >}}
   {{< code-panel language="ruby" >}}
 require 'selenium-webdriver'
@@ -371,6 +406,12 @@ let webElement = await driver.findElement(By.id("myDynamicElement"));
 
 }());
   {{< / code-panel >}}
+  {{< code-panel language="kotlin" >}}
+val driver = FirefoxDriver()
+driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS)
+driver.get("http://somedomain/url_that_delays_loading")
+val myDynamicElement = driver.findElement(By.id("myDynamicElement"))
+  {{< / code-panel >}}
 {{< / code-tab >}}
 
 ## FluentWait
@@ -386,8 +427,8 @@ such as `NoSuchElementException` when searching for an element on the page.
 // Waiting 30 seconds for an element to be present on the page, checking
 // for its presence once every 5 seconds.
 Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
-  .withTimeout(30, SECONDS)
-  .pollingEvery(5, SECONDS)
+  .withTimeout(Duration.ofSeconds(30))
+  .pollingEvery(Duration.ofSeconds(5))
   .ignoring(NoSuchElementException.class);
 
 WebElement foo = wait.until(new Function<WebDriver, WebElement>() {
@@ -410,6 +451,14 @@ element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div")))
   {{< / code-panel >}}
   {{< code-panel language="javascript" >}}
 // We don't have a JavaScript code sample yet -  Help us out and raise a PR  
+  {{< / code-panel >}}
+  {{< code-panel language="kotlin" >}}
+val wait = FluentWait<WebDriver>(getWebDriver())
+        .withTimeout(Duration.ofSeconds(30))
+        .pollingEvery(Duration.ofSeconds(3))
+        .ignoring(NoSuchElementException::class.java)
+
+val foo = wait.until {it.findElement(By.id("foo")) }
   {{< / code-panel >}}
 {{< / code-tab >}}
 

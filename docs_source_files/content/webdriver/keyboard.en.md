@@ -3,7 +3,7 @@ title: "Keyboard"
 weight: 10
 ---
 
-Represents a KeyBoard event. KeyBoard actions are performed by using low-level
+Keyboard represents a KeyBoard event. KeyBoard actions are performed by using low-level
 interface which allows us to provide virtualized device input to the web browser.
 
 ## sendKeys
@@ -77,5 +77,28 @@ const {Builder, By, Key} = require('selenium-webdriver');
         await driver.quit();
     }
 })();
+  {{< / code-panel >}}
+  {{< code-panel language="kotlin" >}}
+import org.openqa.selenium.By
+import org.openqa.selenium.Keys
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.ChromeDriver
+
+class HelloSelenium {
+
+    fun main() {
+        driver = ChromeDriver()
+        try {
+            // Navigate to Url
+            driver.get("https://google.com")
+
+            // Enter text "q" and perform keyboard action "Enter"
+            driver.findElement(By.name("q")).sendKeys("q" + Keys.ENTER)
+        } finally {
+            driver.quit()
+        }
+    }
+}
   {{< / code-panel >}}
 {{< / code-tab >}}

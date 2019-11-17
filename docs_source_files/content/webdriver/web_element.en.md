@@ -3,7 +3,7 @@ title: "Web element"
 weight: 9
 ---
 
-Represents a DOM element. WebElements can be found by searching from the
+WebElement represents a DOM element. WebElements can be found by searching from the
 document root using a WebDriver instance, or by searching under another
 WebElement:
 
@@ -68,6 +68,11 @@ await searchBar.sendKeys('Webdriver');
 
 })();
   {{< / code-panel >}}
+  {{< code-panel language="kotlin" >}}
+val driver = ChromeDriver()
+driver.get("http://www.google.com")
+val searchForm = driver.findElement(By.tagName("form"))
+val searchBox = searchForm.findElement(By.name("q"))
+searchBox.sendKeys("webdriver")
+  {{< / code-panel >}}
 {{< / code-tab >}}
-
-
